@@ -324,7 +324,7 @@ function Hero({ profile }) {
           <span>{typedText}</span><span className="cursor-blink" />
         </div>
         <p className="hero-desc">
-          Final-year <strong>ECE Engineer</strong> at MSRIT, Bengaluru — building at the intersection of
+          Final-year <strong>ETE Engineer</strong> at MSRIT, Bengaluru — building at the intersection of
           embedded systems, robotics, and full-stack AI. From <strong>ISRO quadruped swarms</strong> to
           <strong> production RAG pipelines</strong>.
         </p>
@@ -373,7 +373,8 @@ function About({ skills }) {
           <p>
             At <strong>ISRO</strong>, I developed fault-tolerant control architecture for a 12-DOF
             quadruped robot swarm. At <strong>IIFL Samasta</strong>, I'm building production-grade
-            internal tools — meeting transcribers, document verifiers, and customer retention dashboards.
+            internal tools — meeting transcribers, document verifiers, customer retention dashboards,
+            RAG-Based chatbots, and Jira-like ticket board.
           </p>
           <p>
             Outside the terminal: I shoot photos, play basketball, and occasionally sing. Treasurer of
