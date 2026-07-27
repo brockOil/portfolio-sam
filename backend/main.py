@@ -53,6 +53,12 @@ experience_data = [
 
 projects_data = [
     {
+        "name": "RAG Process Chatbot — Enterprise Document Q&A System",
+        "tech": "Python, FastAPI, ChromaDB, Sentence-Transformers, Groq API, SAML SSO",
+        "description": "Production RAG chatbot enabling employees to query enterprise documents (PDF, DOCX, XLSX, CSV, PPTX) via natural language, with role-based access control. SAML SSO integrated with Entra ID and Zoho HR for authentication and automated role provisioning. Hybrid retrieval pipeline combines GPU-accelerated semantic search (ChromaDB + Sentence-Transformers) with keyword search, served through Groq Cloud for low-latency responses. Includes an internal eval framework (recall@k, precision@k, MRR, LLM-as-judge) and an admin dashboard for ingestion, system health, and audit logs.",
+        "github": ""
+    },
+    {
         "name": "Combat Sports Motion Intelligence",
         "tech": "nRF52832, BLE, BiLSTM, React, WebSocket",
         "description": "Wearable IMU nodes (nRF52832 + BMI270) with BLE wireless. BiLSTM + Multi-Head Attention classifier for 14 MMA movements. React/WebSocket dashboard with Flask/Unity backend.",

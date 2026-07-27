@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
+
+const Scene3D = lazy(() => import('./Scene3D.jsx'));
 
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:8000/api'
@@ -81,9 +83,10 @@ function StarryCanvas() {
       const starCount = Math.min(300, Math.max(80, Math.floor(canvas.width * canvas.height * density)));
       const colors = [
         'rgb(255, 255, 255)',    // White
-        'rgb(230, 242, 255)',    // Cool white
-        'rgb(165, 243, 252)',    // Soft Teal
-        'rgb(253, 230, 138)',    // Soft Amber
+        'rgb(220, 250, 255)',    // Cool white
+        'rgb(140, 240, 255)',    // Cyan
+        'rgb(255, 170, 220)',    // Soft Magenta
+        'rgb(255, 220, 140)',    // Soft Gold
       ];
 
       for (let i = 0; i < starCount; i++) {
@@ -91,10 +94,11 @@ function StarryCanvas() {
         const baseOpacity = Math.random() * 0.6 + 0.2;
         let color = colors[0];
         const rand = Math.random();
-        if (rand < 0.6) color = colors[0];
-        else if (rand < 0.8) color = colors[1];
-        else if (rand < 0.92) color = colors[2];
-        else color = colors[3];
+        if (rand < 0.55) color = colors[0];
+        else if (rand < 0.72) color = colors[1];
+        else if (rand < 0.86) color = colors[2];
+        else if (rand < 0.95) color = colors[3];
+        else color = colors[4];
 
         stars.push({
           x: Math.random() * canvas.width,
@@ -176,7 +180,7 @@ function StarryCanvas() {
 
         const grad = ctx.createLinearGradient(startX, startY, endX, endY);
         grad.addColorStop(0, `rgba(255, 255, 255, ${p.life})`);
-        grad.addColorStop(0.2, `rgba(0, 201, 167, ${p.life * 0.7})`);
+        grad.addColorStop(0.2, `rgba(0, 240, 255, ${p.life * 0.7})`);
         grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
         ctx.beginPath();
@@ -203,6 +207,55 @@ function StarryCanvas() {
   }, [isVisible]);
 
   return <canvas ref={canvasRef} className="starry-canvas" />;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLL REVEAL
+   ═══════════════════════════════════════════ */
+function Reveal({ as: Tag = 'div', className = '', delay = 0, children, ...rest }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const delayClass = delay ? ` reveal-delay-${delay}` : '';
+  return (
+    <Tag ref={ref} className={`reveal${delayClass} ${className}${visible ? ' is-visible' : ''}`} {...rest}>
+      {children}
+    </Tag>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   VIEWPORT HUD FRAME
+   ═══════════════════════════════════════════ */
+function ViewportFrame() {
+  return (
+    <div className="viewport-frame">
+      <span className="vf-corner vf-tl" />
+      <span className="vf-corner vf-tr" />
+      <span className="vf-corner vf-bl" />
+      <span className="vf-corner vf-br" />
+      <span className="vf-label vf-label--tl"><span className="vf-dot" />SYS.PORTFOLIO</span>
+      <span className="vf-label vf-label--tr">BLR // 12.97N, 77.59E</span>
+      <span className="vf-label vf-label--bl">BUILD.2026</span>
+      <span className="vf-label vf-label--br">STATUS: ONLINE</span>
+    </div>
+  );
 }
 
 /* ═══════════════════════════════════════════
@@ -364,7 +417,7 @@ function About({ skills }) {
       <div className="section-label">// 01</div>
       <h2 className="section-title">About me</h2>
       <div className="about-grid">
-        <div className="about-text">
+        <Reveal className="about-text">
           <p>
             I'm a final-year <strong>Electronics and Telecommunication Engineering</strong> student at
             M.S. Ramaiah Institute of Technology, graduating in 2026. I work across embedded systems,
@@ -380,15 +433,20 @@ function About({ skills }) {
             Outside the terminal: I shoot photos, play basketball, and occasionally sing. Treasurer of
             the <strong>IEEE MTT-S RIT-B</strong> chapter.
           </p>
-        </div>
+        </Reveal>
         <div className="skills-grid">
-          {skillGroups.map(g => (
-            <div className={`skill-group${g.fullWidth ? ' full-width' : ''}`} key={g.title}>
+          {skillGroups.map((g, i) => (
+            <Reveal
+              as="div"
+              delay={Math.min(i + 1, 4)}
+              className={`skill-group hud-bracket${g.fullWidth ? ' full-width' : ''}`}
+              key={g.title}
+            >
               <div className="skill-group-title">{g.title}</div>
               <div className="skill-tags">
                 {g.items.map(s => <span className="tag" key={s}>{s}</span>)}
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -407,7 +465,7 @@ function Experience({ experience }) {
       <h2 className="section-title">Experience</h2>
       <div className="timeline">
         {experience.map((exp, i) => (
-          <div className="tl-item" key={i}>
+          <Reveal as="div" className="tl-item" delay={Math.min(i + 1, 4)} key={i}>
             <div className="tl-dot" />
             <div className="tl-period">{exp.duration}</div>
             <div className="tl-role">
@@ -416,7 +474,7 @@ function Experience({ experience }) {
             </div>
             <div className="tl-company">{exp.company}</div>
             <div className="tl-desc">{exp.details}</div>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -446,7 +504,12 @@ function Projects({ projects }) {
       {/* Featured projects — large cards */}
       <div className="featured-grid">
         {featured.map((proj, i) => (
-          <div className={`feat-card${i === 0 ? ' feat-card--wide' : ''}`} key={i}>
+          <Reveal
+            as="div"
+            delay={Math.min(i + 1, 4)}
+            className={`feat-card hud-bracket${i === 0 ? ' feat-card--wide' : ''}`}
+            key={i}
+          >
             <div className="feat-card__top">
               <span className="feat-num">0{i + 1}</span>
               <div className="feat-card__stack">
@@ -469,7 +532,7 @@ function Projects({ projects }) {
                 </a>
               )}
             </div>
-          </div>
+          </Reveal>
         ))}
       </div>
 
@@ -477,7 +540,7 @@ function Projects({ projects }) {
       <div className="other-projects">
         <div className="other-projects__label">Other noteworthy projects</div>
         {others.map((proj, i) => (
-          <div className="other-row" key={i}>
+          <Reveal as="div" className="other-row" delay={Math.min((i % 4) + 1, 4)} key={i}>
             <div className="other-row__info">
               <span className="other-row__name">{proj.name}</span>
               <span className="other-row__desc">{proj.description}</span>
@@ -494,7 +557,7 @@ function Projects({ projects }) {
             ) : (
               <span className="other-row__link other-row__link--empty" />
             )}
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -509,7 +572,7 @@ function Contact() {
     <section id="contact" className="section-alt">
       <div className="section-label">// 04</div>
       <h2 className="section-title">Get in touch</h2>
-      <div className="contact-inner">
+      <Reveal className="contact-inner">
         <p className="contact-desc">
           I'm actively looking for full-time roles and internships in{' '}
           <strong style={{ color: 'var(--text)' }}>AI/ML engineering</strong>,{' '}
@@ -518,20 +581,20 @@ function Contact() {
           If you're working on something interesting, let's talk.
         </p>
         <div className="contact-links">
-          <a className="contact-link" href="mailto:bhandiwadsameer@gmail.com">
+          <a className="contact-link hud-bracket" href="mailto:bhandiwadsameer@gmail.com">
             <MailIcon /> bhandiwadsameer@gmail.com
           </a>
-          <a className="contact-link" href="https://github.com/brockOil" target="_blank" rel="noopener noreferrer">
+          <a className="contact-link hud-bracket" href="https://github.com/brockOil" target="_blank" rel="noopener noreferrer">
             <GitHubIcon /> github.com/brockOil
           </a>
-          <a className="contact-link" href="https://www.linkedin.com/in/sameer-p-bhandiwad-b61756250/" target="_blank" rel="noopener noreferrer">
+          <a className="contact-link hud-bracket" href="https://www.linkedin.com/in/sameer-p-bhandiwad-b61756250/" target="_blank" rel="noopener noreferrer">
             <LinkedInIcon /> LinkedIn
           </a>
-          <a className="contact-link" href="tel:+917892881245">
+          <a className="contact-link hud-bracket" href="tel:+917892881245">
             <PhoneIcon /> +91 78928 81245
           </a>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -578,7 +641,14 @@ function App() {
 
   return (
     <>
+      <div className="mesh-glow" />
+      <div className="hud-grid" />
+      <div className="scan-sweep" />
       <StarryCanvas />
+      <Suspense fallback={null}>
+        <Scene3D />
+      </Suspense>
+      <ViewportFrame />
       <Navbar />
       <Hero profile={data.profile} />
       <About skills={data.skills} />
