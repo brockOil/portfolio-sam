@@ -1,10 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
-
-const Scene3D = lazy(() => import('./Scene3D.jsx'));
-
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8000/api'
-  : '/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { profile, experience, projects, skills } from './data.js';
 
 /* ═══════════════════════════════════════════
    ICONS (inline SVG so we don't need lucide)
@@ -603,57 +598,18 @@ function Contact() {
    APP
    ═══════════════════════════════════════════ */
 function App() {
-  const [data, setData] = useState({ profile: null, experience: null, projects: null, skills: null });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [profRes, expRes, projRes, skillRes] = await Promise.all([
-          fetch(`${API_BASE}/profile`),
-          fetch(`${API_BASE}/experience`),
-          fetch(`${API_BASE}/projects`),
-          fetch(`${API_BASE}/skills`),
-        ]);
-        setData({
-          profile: await profRes.json(),
-          experience: await expRes.json(),
-          projects: await projRes.json(),
-          skills: await skillRes.json(),
-        });
-      } catch (err) {
-        console.error('Failed to fetch data. Ensure backend is running.', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner" />
-        <div className="loading-text">Initializing...</div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="mesh-glow" />
       <div className="hud-grid" />
       <div className="scan-sweep" />
       <StarryCanvas />
-      <Suspense fallback={null}>
-        <Scene3D />
-      </Suspense>
       <ViewportFrame />
       <Navbar />
-      <Hero profile={data.profile} />
-      <About skills={data.skills} />
-      <Experience experience={data.experience} />
-      <Projects projects={data.projects} />
+      <Hero profile={profile} />
+      <About skills={skills} />
+      <Experience experience={experience} />
+      <Projects projects={projects} />
       <Contact />
       <footer>
         <span>Sameer P Bhandiwad — MSRIT '26</span>
