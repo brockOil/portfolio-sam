@@ -372,7 +372,7 @@ function Hero({ profile }) {
           <span>{typedText}</span><span className="cursor-blink" />
         </div>
         <p className="hero-desc">
-          Final-year <strong>ETE Engineer</strong> at MSRIT, Bengaluru — building at the intersection of
+          <strong>ETE Engineering graduate</strong> from MSRIT, Bengaluru — building at the intersection of
           embedded systems, robotics, and full-stack AI. From <strong>ISRO quadruped swarms</strong> to
           <strong> production RAG pipelines</strong>.
         </p>
@@ -414,8 +414,8 @@ function About({ skills }) {
       <div className="about-grid">
         <Reveal className="about-text">
           <p>
-            I'm a final-year <strong>Electronics and Telecommunication Engineering</strong> student at
-            M.S. Ramaiah Institute of Technology, graduating in 2026. I work across embedded systems,
+            I'm a recent <strong>Electronics and Telecommunication Engineering</strong> graduate of
+            M.S. Ramaiah Institute of Technology (Class of 2026). I work across embedded systems,
             robotics, and full-stack AI — building things that run on silicon and scale in the cloud.
           </p>
           <p>
